@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     Channel c0("0000", q);
 
 
-    c0.Open(input, start, end);
+    c0.Open(input, start);
     u_char* d_img;
     cv::Mat h_img(2160, 3840, CV_8UC3);
     cudaMalloc(&d_img, 3840* 2160 * 3);
@@ -133,8 +133,15 @@ int main(int argc, char *argv[])
             cv::imshow("aa", h_img);
             if (cv::waitKey(1) == 27) break;
         }
+        if ((i - start)%5 ==0) {
+            std::string back("\b\b\b\b\b\b");
+            std::cout << back;
+            std::cout << "=" << setw(6) << i << std::flush;
+        }
     
     }
+    writer.release();
+    printf("\n%s saved successfully\n", output.c_str());
     q->stopQueue();
     return 0;
 

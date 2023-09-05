@@ -24,12 +24,11 @@ public:
     virtual void OnVideDecodeTimestamp(uint64_t ulTimestamp);
     virtual uint64_t GetVideoDecodeTimestamp();
 
-    void Open(string strFile, int start = 0, int size = -1);
+    void Open(string strFile, int start = 0);
     void Stop();
     void FastForward();
-    void ThreadReadH264File(int start, int size);
-    void ThreadReadAqmsFile(int start, int size);
-    static void ConvertNV12ToRGB(const uint8_t *yuvBuf, uint8_t *rbgBuf,int width,int height,int linesize);
+    void ThreadReadH264File(int start);
+    void ThreadReadAqmsFile(int start);
     
     bool b_stop = false;
     FILE* m_pFile;

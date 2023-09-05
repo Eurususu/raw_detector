@@ -45,7 +45,7 @@ uint64_t Channel::GetVideoDecodeTimestamp()
     return m_ulTimestamp;
 }
 
-void Channel::Open(string strFile, int start, int size)
+void Channel::Open(string strFile, int start)
 {
     b_stop = false;
     cudaMalloc((void **)&m_pDataRGB, 3840 * 2160 * 3);
@@ -55,9 +55,9 @@ void Channel::Open(string strFile, int start, int size)
     auto idx = strFile.find_last_of('.');
     std::string suffix = strFile.substr(idx + 1, strFile.size() - idx - 1);
     if (suffix == "aqms")
-        m_thread = thread(&Channel::ThreadReadAqmsFile, this, start, size);
+        m_thread = thread(&Channel::ThreadReadAqmsFile, this, start);
     else if (suffix == "h264")
-        m_thread = thread(&Channel::ThreadReadH264File, this, start, size);
+        m_thread = thread(&Channel::ThreadReadH264File, this, start);
 }
 
 void Channel::Stop()
@@ -94,7 +94,7 @@ void Channel::FastForward()
 {
     b_ff = true;
 }
-void Channel::ThreadReadAqmsFile(int start, int size)
+void Channel::ThreadReadAqmsFile(int start)
 {
 
     int nBuffLen = 800000;
@@ -116,7 +116,6 @@ void Channel::ThreadReadAqmsFile(int start, int size)
             }
         }
     }
-    int frame_id = 0;
     while (!b_stop && !feof(m_pFile))
     {
         if (m_pDecoder->IsFull()) {
@@ -139,15 +138,11 @@ void Channel::ThreadReadAqmsFile(int start, int size)
             continue;
         }
         m_pDecoder->Decode(pBuff, nLen);
-        frame_id++;
-        if (frame_id == size) {
-            break;
-        }
     }
     delete[] pBuff;
 }
 
-void Channel::ThreadReadH264File(int start, int size)
+void Channel::ThreadReadH264File(int start)
 {
 
     int nBuffLen = 800000;
@@ -165,7 +160,6 @@ void Channel::ThreadReadH264File(int start, int size)
         }
     }
 
-    int frame_id = 0;
     while (!b_stop && !feof(m_pFile)) {
         if (m_pDecoder->IsFull()) {
             AQT::AQSleep(1);
@@ -181,10 +175,7 @@ void Channel::ThreadReadH264File(int start, int size)
         }
         fread(pBuff, nLen, 1, m_pFile);
         m_pDecoder->Decode(pBuff, nLen);
-        frame_id++;
-        if (frame_id == size) {
-            break;
-        }
+
     }
     
     delete[] pBuff;
