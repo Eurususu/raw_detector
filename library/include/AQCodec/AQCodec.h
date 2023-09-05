@@ -27,6 +27,8 @@ class IDecoder
     virtual void Close() = 0;
     virtual void SetDelay(int nFrames) = 0;
     virtual bool IsFull() = 0;
+    virtual void ReadyStop() = 0;
+    virtual bool IsRunning() = 0;
 };
 
 class IEncoderCallback

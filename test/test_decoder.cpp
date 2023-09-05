@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
     {
         return -1;
     }
-
     std::shared_ptr<PtrQueue<Frames>> q(new PtrQueue<Frames>);
     q->setMaxSize(100);
 
@@ -112,6 +111,7 @@ int main(int argc, char *argv[])
     while (i++ != end) {
         std::shared_ptr<Frames> f;
         f = q->pop();
+        if (f == nullptr) break;
         cudaMemcpyAsync(h_img.data, f->data, 3840* 2160 *3, cudaMemcpyDeviceToHost, s);
         cudaStreamSynchronize(s);
         if (b_out) {
@@ -140,8 +140,10 @@ int main(int argc, char *argv[])
         }
     
     }
-    writer.release();
-    printf("\n%s saved successfully\n", output.c_str());
+    if (b_out && b_save_video) {
+        writer.release();
+        printf("\n%s saved successfully\n", output.c_str());
+    }
     q->stopQueue();
     return 0;
 

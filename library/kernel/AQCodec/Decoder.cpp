@@ -16,7 +16,7 @@ CDecoder::CDecoder(int nMaxWidth, int nMaxHeight, uint32_t nCodecType, EVideoSur
     : m_nMaxWidth(nMaxWidth), m_nMaxHeight(nMaxHeight), m_nWidth(0), m_nHeight(0), m_nCodecType(nCodecType),
       m_eCodecType(cudaVideoCodec_H264), m_eVideoSurfaceFormat(eVideoSurfaceFormat),
       m_ePixelColorFormat(ePixelColorFormat), m_cCuvidStream(cuStream), m_cDecoder(0), m_cContext(0), m_cVidCtxLock(0),
-      m_cParser(0), m_rNotify(rNotify), m_ulTimestamp(0), m_bFull(false)
+      m_cParser(0), m_rNotify(rNotify), m_ulTimestamp(0), m_bFull(false), m_bEndStream(false)
 {
 }
 
@@ -244,6 +244,16 @@ void CDecoder::SetDelay(int nFrames)
 bool CDecoder::IsFull()
 {
     return m_bFull;
+}
+
+void CDecoder::ReadyStop()
+{
+    m_bEndStream = true;
+}
+
+bool CDecoder::IsRunning()
+{
+    return m_bMainRuning;
 }
 
 int CDecoder::GetChromaPlaneCount(cudaVideoChromaFormat eChromaFormat)
@@ -576,6 +586,7 @@ void CDecoder::MainThread()
             ulTimeLast = ulNow;
 
         }
+        if (m_listPack.size() == 0 && m_bEndStream) m_bMainRuning = false;;
 
         AQT::AQSleep(1);
     }

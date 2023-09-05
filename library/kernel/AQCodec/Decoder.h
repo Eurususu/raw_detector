@@ -35,6 +35,8 @@ class CDecoder : public IDecoder
     void Close() override;
     void SetDelay(int nFrames) override;
     bool IsFull() override;
+    void ReadyStop() override;
+    bool IsRunning() override;
 
   private:
     void MainThread();
@@ -48,7 +50,8 @@ class CDecoder : public IDecoder
     static int CUDAAPI HandlePictureDisplay(void *pUserData, CUVIDPARSERDISPINFO *pPicParams);
 
   public:
-    int m_bFull;
+    bool m_bFull;
+    bool m_bEndStream;
     int m_nGpuID;
     int m_nMaxWidth;
     int m_nMaxHeight;

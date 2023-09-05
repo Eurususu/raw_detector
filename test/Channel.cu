@@ -139,6 +139,11 @@ void Channel::ThreadReadAqmsFile(int start)
         }
         m_pDecoder->Decode(pBuff, nLen);
     }
+    m_pDecoder->ReadyStop();
+    while (m_pDecoder->IsRunning()) {
+        AQT::AQSleep(5);
+    }
+    m_queue->togglePushable(false);
     delete[] pBuff;
 }
 
@@ -177,6 +182,11 @@ void Channel::ThreadReadH264File(int start)
         m_pDecoder->Decode(pBuff, nLen);
 
     }
+    m_pDecoder->ReadyStop();
+    while (m_pDecoder->IsRunning()) {
+        AQT::AQSleep(5);
+    }
+    m_queue->togglePushable(false);
     
     delete[] pBuff;
 }
