@@ -1,5 +1,22 @@
 # 视频提取工具
 
+## 编译方法
+使用cmake构建工程，使用make进行编译
+由于用到了c++17 的filesystem，需要完全支持c++17的编译器，gcc-7.5可能有问题，经测试，gcc-9.5以上能顺利编译，对应ubuntu distributin 至少是20.04.
+
+```
+sudo apt install cmake build-essential libopencv-dev
+```
+然后安装显卡驱动（尽可能新）和 CUDA 11.x
+
+下载 ropo 源码，cd 进入 repo 目录
+```
+mkdir build && cd build
+cmake ..
+make
+```
+
+## 使用方法
 将私有的.h264和.aqms文件保存为MP4或图片的工具
 使用方法：
 1. 预览视频
